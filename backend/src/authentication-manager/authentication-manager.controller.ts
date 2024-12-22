@@ -1,6 +1,7 @@
 import { Body, Post, Get, Query, Controller } from '@nestjs/common';
 import { AuthenticationManagerService } from './authentication-manager.service';
 import { RegisterUserDto } from './dtos/register-user.dto';
+import { LoginUserDto } from './dtos/login-user.dto';
 
 @Controller('auth')
 export class AuthenticationManagerController {
@@ -14,5 +15,10 @@ export class AuthenticationManagerController {
   @Get('verify-email')
   async verifyEmail(@Query('token') token: string): Promise<string> {
     return this.authService.verifyEmail(token);
+  }
+
+  @Post('login')
+  async loginUser(@Body() user: LoginUserDto): Promise<string> {
+    return this.authService.loginUser(user);
   }
 }

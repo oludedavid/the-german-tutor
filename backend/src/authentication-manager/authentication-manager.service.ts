@@ -162,4 +162,53 @@ export class AuthenticationManagerService {
       throw new BadRequestException('Verification failed.');
     }
   }
+
+  async loginUser(user: { email: string; password: string }): Promise<string> {
+    const { email, password } = user;
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      throw new BadRequestException(
+        'Missing required fields: email or password',
+      );
+    }
+
+    const sanitizedEmail = sanitizeHtml(trimmedEmail);
+    const sanitizedPassword = sanitizeHtml(trimmedPassword);
+
+    const existingUser = await this.userModel.findOne({
+      email: sanitizedEmail,
+    });
+    if (!existingUser) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    if (!existingUser.isVerified) {
+      throw new BadRequestException(
+        'Please verify your email address before logging in',
+      );
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      sanitizedPassword,
+      existingUser.password,
+    );
+    if (!isPasswordCorrect) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    const token = await this.generateToken(existingUser);
+    return JSON.stringify({
+      token,
+      role: existingUser.role,
+      fullName: existingUser.fullName,
+      id: existingUser._id,
+    });
+  }
+
+  async logoutUser(): Promise<string> {
+    return 'User successfully logged out';
+  }
 }

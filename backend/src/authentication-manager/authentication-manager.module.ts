@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './schemas/user.schema';
 import { AuthenticationManagerService } from './authentication-manager.service';
@@ -6,6 +6,7 @@ import { AuthenticationManagerController } from './authentication-manager.contro
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
@@ -24,7 +25,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
-  providers: [AuthenticationManagerService],
+  providers: [AuthenticationManagerService, AuthMiddleware],
   controllers: [AuthenticationManagerController],
 })
-export class AuthenticationManagerModule {}
+export class AuthenticationManagerModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('auth/logout');
+  }
+}
