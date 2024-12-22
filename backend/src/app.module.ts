@@ -5,6 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './authentication-manager/schemas/user.schema';
 import { AuthenticationManagerModule } from './authentication-manager/authentication-manager.module';
 import { AuthenticationManagerService } from './authentication-manager/authentication-manager.service';
+import { CartManagerModule } from './cart-manager/cart-manager.module';
+import { OrderManagerModule } from './order-manager/order-manager.module';
+import { DashboardManagerModule } from './dashboard-manager/dashboard-manager.module';
+import { CourseManagerModule } from './course-manager/course-manager.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: process.cwd() + '/.env.dev' });
@@ -18,6 +22,10 @@ const { DB_CONNECTION_STRING, DB_USER, DB_PASSWORD } = process.env;
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     AuthenticationManagerModule,
+    CartManagerModule,
+    OrderManagerModule,
+    DashboardManagerModule,
+    CourseManagerModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthenticationManagerService],
