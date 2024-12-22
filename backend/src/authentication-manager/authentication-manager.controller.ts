@@ -1,4 +1,4 @@
-import { Body, Post, Controller } from '@nestjs/common';
+import { Body, Post, Get, Query, Controller } from '@nestjs/common';
 import { AuthenticationManagerService } from './authentication-manager.service';
 import { RegisterUserDto } from './dtos/register-user.dto';
 
@@ -7,7 +7,12 @@ export class AuthenticationManagerController {
   constructor(private readonly authService: AuthenticationManagerService) {}
 
   @Post('register')
-  registerUser(@Body() user: RegisterUserDto): string {
+  async registerUser(@Body() user: RegisterUserDto): Promise<string> {
     return this.authService.registerUser(user);
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string): Promise<string> {
+    return this.authService.verifyEmail(token);
   }
 }

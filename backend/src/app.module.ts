@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './authentication-manager/schemas/user.schema';
 import { AuthenticationManagerModule } from './authentication-manager/authentication-manager.module';
-import { AuthenticationManagerService } from './authentication-manager/authentication-manager.service';
 import { CartManagerModule } from './cart-manager/cart-manager.module';
 import { OrderManagerModule } from './order-manager/order-manager.module';
 import { DashboardManagerModule } from './dashboard-manager/dashboard-manager.module';
 import { CourseManagerModule } from './course-manager/course-manager.module';
+import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: process.cwd() + '/.env.dev' });
@@ -20,14 +19,18 @@ const { DB_CONNECTION_STRING, DB_USER, DB_PASSWORD } = process.env;
     MongooseModule.forRoot(DB_CONNECTION_STRING, {
       auth: { username: DB_USER, password: DB_PASSWORD },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+
     AuthenticationManagerModule,
     CartManagerModule,
     OrderManagerModule,
     DashboardManagerModule,
     CourseManagerModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService, AuthenticationManagerService],
+  providers: [AppService],
 })
 export class AppModule {}
