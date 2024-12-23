@@ -8,6 +8,7 @@ import { OrderManagerModule } from './order-manager/order-manager.module';
 import { DashboardManagerModule } from './dashboard-manager/dashboard-manager.module';
 import { CourseManagerModule } from './course-manager/course-manager.module';
 import { ConfigModule } from '@nestjs/config';
+import { AiIntegrationManagerModule } from './ai-integration-manager/ai-integration-manager.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: process.cwd() + '/.env.dev' });
@@ -29,6 +30,7 @@ const { DB_CONNECTION_STRING, DB_USER, DB_PASSWORD } = process.env;
       envFilePath: '.env',
       isGlobal: true,
     }),
+    AiIntegrationManagerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
