@@ -2,6 +2,11 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
+import {
+  Dashboard,
+  DashbordDocument,
+} from 'src/dashboard-manager/schemas/dashboard.schema';
+import { Cart, CartDocument } from 'src/cart-manager/schemas/cart.schema';
 import { JwtService } from '@nestjs/jwt';
 import * as sanitizeHtml from 'sanitize-html';
 import * as bcrypt from 'bcrypt';
@@ -13,6 +18,9 @@ export class AuthenticationManagerService {
 
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Dashboard.name)
+    private readonly dashboardModel: Model<DashbordDocument>,
+    @InjectModel(Cart.name) private readonly cartModel: Model<CartDocument>,
     private jwtService: JwtService,
   ) {
     this.emailTransporter = nodemailer.createTransport({
@@ -150,6 +158,20 @@ export class AuthenticationManagerService {
 
       existingUser.isVerified = true;
       await existingUser.save();
+
+      //attach a dashboard to the user
+      const newDashboard = new this.dashboardModel({
+        owner: existingUser._id,
+      });
+      await newDashboard.save();
+
+      //attach a cart to the user
+      const newCart = new this.cartModel({
+        owner: existingUser._id,
+        courses: [],
+      });
+
+      await newCart.save();
 
       return 'Email verified successfully. You are now fully registered.';
     } catch (error) {

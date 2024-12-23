@@ -12,6 +12,6 @@ export class Dashboard {
   owner: string;
 }
 
-const dashboardSchema = SchemaFactory.createForClass(Dashboard);
+const DashboardSchema = SchemaFactory.createForClass(Dashboard);
 
-export default dashboardSchema;
+export default DashboardSchema;

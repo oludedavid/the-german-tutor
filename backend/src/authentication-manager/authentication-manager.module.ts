@@ -1,6 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './schemas/user.schema';
+import DashboardSchema from 'src/dashboard-manager/schemas/dashboard.schema';
+import { CartSchema } from 'src/cart-manager/schemas/cart.schema';
 import { AuthenticationManagerService } from './authentication-manager.service';
 import { AuthenticationManagerController } from './authentication-manager.controller';
 import { PassportModule } from '@nestjs/passport';
@@ -24,6 +26,8 @@ import { AuthMiddleware } from './middleware/auth.middleware';
       },
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'Dashboard', schema: DashboardSchema }]),
+    MongooseModule.forFeature([{ name: 'Cart', schema: CartSchema }]),
   ],
   providers: [AuthenticationManagerService, AuthMiddleware],
   controllers: [AuthenticationManagerController],
