@@ -1,7 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './schemas/user.schema';
-import DashboardSchema from 'src/dashboard-manager/schemas/dashboard.schema';
+import { DashboardSchema } from 'src/dashboard-manager/schemas/dashboard.schema';
 import { CartSchema } from 'src/cart-manager/schemas/cart.schema';
 import { AuthenticationManagerService } from './authentication-manager.service';
 import { AuthenticationManagerController } from './authentication-manager.controller';

@@ -31,11 +31,11 @@ export class CourseOffered {
   duration: string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: [Types.ObjectId],
     ref: 'User',
-    required: true,
+    default: [],
   })
-  tutor: Types.ObjectId;
+  tutors: Types.ObjectId[];
 
   @Prop({
     type: [Types.ObjectId],
