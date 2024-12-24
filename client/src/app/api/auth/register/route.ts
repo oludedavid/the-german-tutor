@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
+const { BACKEND_URL } = process.env;
+
 export type RegisterBody = {
   fullName: string;
   email: string;
@@ -11,7 +13,7 @@ export async function POST(req: NextRequest) {
   try {
     const userDetails: RegisterBody = await req.json();
     const apiResponse = await axios.post(
-      "http://localhost:5001/auth/register",
+      `${BACKEND_URL}/auth/register`,
       userDetails
     );
 

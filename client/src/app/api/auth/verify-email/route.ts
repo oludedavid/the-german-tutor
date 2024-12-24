@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
+const { BACKEND_URL } = process.env;
+
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
@@ -13,21 +15,15 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const response = await axios.get(
-      "http://localhost:5001/auth/verify-email",
-      {
-        params: { token },
-      }
-    );
-
-    console.log("Verification Response:", response.data);
+    const response = await axios.get(`${BACKEND_URL}/auth/verify-email`, {
+      params: { token },
+    });
 
     return NextResponse.json(
       { message: "Email verification successful.", data: response.data },
       { status: 200 }
     );
   } catch (err) {
-    console.error("Error verifying email:", err);
     return NextResponse.json(
       { message: "Failed to verify email.", err },
       { status: 500 }

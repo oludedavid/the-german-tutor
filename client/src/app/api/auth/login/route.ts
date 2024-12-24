@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import axios from "axios";
+const { BACKEND_URL } = process.env;
 
 export type LoginBody = {
   email: string;
@@ -15,11 +16,10 @@ export async function POST(req: NextRequest) {
   try {
     const userDetails: LoginBody = await req.json();
     const apiResponse = await axios.post(
-      "http://localhost:5001/auth/login",
+      `${BACKEND_URL}/auth/login`,
       userDetails
     );
 
-    console.log("Backend Response:", apiResponse.data);
     const cookieStore = await cookies();
     cookieStore.set("accessToken", apiResponse.data.token, {
       httpOnly: true,
@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
     axios.interceptors.request.use(async function (config) {
       const accessToken = await getCookie("accessToken");
       if (accessToken) {
-        // Attach the token as a cookie to the request
         config.headers.Cookie = `accessToken=${accessToken}`;
       }
       return config;
@@ -42,8 +41,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error logging in user:", error);
-
     if (axios.isAxiosError(error) && error.response) {
       return NextResponse.json(
         {
