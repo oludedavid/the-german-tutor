@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import axios from "axios";
 
-// Get Handler for User Logout
 export async function GET() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");

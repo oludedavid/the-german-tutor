@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
@@ -8,7 +7,6 @@ export type RegisterBody = {
   password: string;
 };
 
-// POST Handler for User Registration
 export async function POST(req: NextRequest) {
   try {
     const userDetails: RegisterBody = await req.json();
@@ -28,20 +26,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// GET Handler Example
-export async function GET(req: NextRequest) {
-  return NextResponse.json(
-    { message: "This is the GET handler for this endpoint" },
-    { status: 200 }
-  );
-}
-
-// PATCH Handler Example
-export async function PATCH(req: NextRequest) {
-  return NextResponse.json(
-    { message: "This is the PATCH handler for this endpoint" },
-    { status: 200 }
-  );
 }

@@ -7,12 +7,9 @@ export type LoginBody = {
   password: string;
 };
 
-// POST Handler for User Login
 export async function POST(req: NextRequest) {
   try {
     const userDetails: LoginBody = await req.json();
-
-    // Make request to backend authentication endpoint
     const apiResponse = await axios.post(
       "http://localhost:5001/auth/login",
       userDetails
