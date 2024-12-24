@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 import {
   Form,
@@ -79,12 +80,13 @@ export default function Login() {
               Want to be part of the best German learning community? Sign up
               below and start your journey toward fluency today!
             </p>
-            <Button
+            <Link
+              href="/register"
               className="w-1/3 border-none bg-gray-200 rounded-2xl"
               aria-label="Login button"
             >
               Signup
-            </Button>
+            </Link>
             <div className="w-full h-96 flex justify-center items-center">
               <Image
                 src="/images/login1.png"

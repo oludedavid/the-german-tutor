@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -80,12 +81,13 @@ export default function Register() {
               Unlock your German fluency! Join our online bootcamp and master
               levels A1 to B2 with ease.
             </p>
-            <Button
+            <Link
+              href="/login"
               className="w-1/3 border-none bg-gray-200 rounded-2xl"
               aria-label="Login button"
             >
               Login
-            </Button>
+            </Link>
             <div className="w-full h-96 flex justify-center items-center">
               <Image
                 src="/images/register1.png"
