@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Dashboard, DashbordDocument } from './schemas/dashboard.schema';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class DashboardManagerService {
@@ -12,7 +13,9 @@ export class DashboardManagerService {
 
   // Get a dashboard by the user's ID
   async getDashboardByOwner(ownerId: string): Promise<Dashboard | null> {
-    return this.dashboardModel.findOne({ owner: ownerId }).exec();
+    return this.dashboardModel
+      .findOne({ owner: new Types.ObjectId(ownerId) })
+      .exec();
   }
 
   // Get all dashboards

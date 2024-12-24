@@ -97,6 +97,7 @@ export default function Register() {
                 width={300}
                 height={300}
                 alt="Illustration of registration"
+                role="img"
               />
             </div>
           </div>
@@ -123,6 +124,7 @@ export default function Register() {
                   form={form}
                   placeholder="Your full name"
                   iconSrc="/images/fullname-logo.png"
+                  id="fullName"
                 />
 
                 {/* Email Field */}
@@ -133,6 +135,7 @@ export default function Register() {
                   placeholder="you@example.com"
                   iconSrc="/images/email-logo.png"
                   type="email"
+                  id="email"
                 />
 
                 {/* Password Field */}
@@ -143,12 +146,14 @@ export default function Register() {
                   placeholder="Your password"
                   iconSrc="/images/password-logo.png"
                   type="password"
+                  id="password"
                 />
 
                 <Button
                   type="submit"
                   className="w-full bg-gray-600 hover:bg-gray-400 text-white"
                   disabled={isSubmitting}
+                  aria-live="polite"
                 >
                   {isSubmitting ? "Signing Up..." : "Sign Up"}
                 </Button>
@@ -168,6 +173,7 @@ function FieldWithIcon({
   placeholder,
   iconSrc,
   type = "text",
+  id,
 }: {
   label: string;
   name: keyof z.infer<typeof formSchema>;
@@ -176,14 +182,15 @@ function FieldWithIcon({
   placeholder: string;
   iconSrc: string;
   type?: string;
+  id: string;
 }) {
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel htmlFor={id}>{label}</FormLabel>
           <div className="w-full flex justify-start items-center h-12 rounded-sm px-2 py-2 border border-gray-300">
             <Image
               priority
@@ -191,12 +198,26 @@ function FieldWithIcon({
               width={20}
               height={20}
               alt={`${label} icon`}
+              role="presentation"
             />
             <FormControl className="border-none w-full focus-visible:ring-0 focus-visible:ring-offset-0">
-              <Input type={type} placeholder={placeholder} {...field} />
+              <Input
+                id={id}
+                type={type}
+                placeholder={placeholder}
+                {...field}
+                aria-labelledby={id}
+                aria-describedby={`${id}-error`}
+              />
             </FormControl>
           </div>
-          <FormMessage className="text-red-300" />
+          {fieldState?.error && (
+            <FormMessage
+              className="text-red-300"
+              aria-live="assertive"
+              id={`${id}-error`}
+            />
+          )}
         </FormItem>
       )}
     />

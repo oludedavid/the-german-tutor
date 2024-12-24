@@ -14,43 +14,52 @@ export default function VerifyEmailPage() {
   const [verificationStatus, setVerificationStatus] = useState<string | null>(
     null
   );
+  const [isMounted, setIsMounted] = useState(false); // To check if client-side rendering has occurred
 
   useEffect(() => {
-    if (token) {
-      axios
-        .get("/api/auth/verify-email", { params: { token } })
-        .then((response) => {
-          if (response.data) {
-            setVerificationStatus("success");
-            toast({
-              variant: "default",
-              title: "Email Verified",
-              description: "You can now login to your account.",
-            });
-            router.push("/login");
-          } else {
-            setVerificationStatus("failed");
-            toast({
-              variant: "destructive",
-              title: "Verification Failed",
-              description:
-                response.data || "Something went wrong. Please try again.",
-            });
-          }
-        })
-        .catch((error) => {
+    setIsMounted(true); // Set mounted to true after the first render
+  }, []);
+
+  useEffect(() => {
+    if (!token || !isMounted) return; // Only execute on the client and if token is available
+
+    axios
+      .get("/api/auth/verify-email", { params: { token } })
+      .then((response) => {
+        if (response.data) {
+          setVerificationStatus("success");
+          toast({
+            variant: "default",
+            title: "Email Verified",
+            description: "You can now login to your account.",
+          });
+          router.push("/login");
+        } else {
           setVerificationStatus("failed");
           toast({
             variant: "destructive",
-            title: `Verification Failed: ${error}`,
-            description: "Something went wrong. Please try again.",
+            title: "Verification Failed",
+            description:
+              response.data || "Something went wrong. Please try again.",
           });
-        })
-        .finally(() => {
-          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        setVerificationStatus("failed");
+        toast({
+          variant: "destructive",
+          title: `Verification Failed: ${error}`,
+          description: "Something went wrong. Please try again.",
         });
-    }
-  }, [token, router, toast]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [token, router, toast, isMounted]);
+
+  if (!isMounted) {
+    return null; // Render nothing until mounted to avoid hydration errors
+  }
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-50">

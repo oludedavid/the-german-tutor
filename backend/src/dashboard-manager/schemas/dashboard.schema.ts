@@ -9,7 +9,7 @@ export class Dashboard {
     type: Types.ObjectId,
     required: true,
   })
-  owner: string;
+  owner: Types.ObjectId;
 }
 
 export const DashboardSchema = SchemaFactory.createForClass(Dashboard);

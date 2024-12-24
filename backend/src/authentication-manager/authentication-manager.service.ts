@@ -159,19 +159,29 @@ export class AuthenticationManagerService {
       existingUser.isVerified = true;
       await existingUser.save();
 
-      //attach a dashboard to the user
-      const newDashboard = new this.dashboardModel({
-        owner: existingUser._id,
-      });
-      await newDashboard.save();
+      const session = await this.cartModel.db.startSession();
+      session.startTransaction();
+      try {
+        const newDashboard = new this.dashboardModel({
+          owner: existingUser._id,
+        });
+        await newDashboard.save({ session });
 
-      //attach a cart to the user
-      const newCart = new this.cartModel({
-        owner: existingUser._id,
-        courses: [],
-      });
+        const newCart = new this.cartModel({
+          owner: existingUser._id,
+          courses: [],
+        });
+        await newCart.save({ session });
 
-      await newCart.save();
+        await session.commitTransaction();
+      } catch (error) {
+        await session.abortTransaction();
+        throw new BadRequestException(
+          'Failed to verify email and create resources',
+        );
+      } finally {
+        session.endSession();
+      }
 
       return 'Email verified successfully. You are now fully registered.';
     } catch (error) {

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import Cookies from "universal-cookie";
 import axios from "axios";
 
 const { BACKEND_URL } = process.env;
 
 export async function GET() {
-  const cookieStore = await cookies();
-  cookieStore.delete("accessToken");
+  const cookieStore = new Cookies();
+  cookieStore.remove("TOKEN");
   const apiResponse = await axios.get(`${BACKEND_URL}/auth/logout`);
   return NextResponse.json(
     {

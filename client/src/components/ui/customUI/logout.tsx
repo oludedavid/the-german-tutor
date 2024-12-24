@@ -4,15 +4,38 @@ import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import Cookies from "universal-cookie";
 
 export default function Logout() {
   const router = useRouter();
   const { toast } = useToast();
+
   const handleLogout = async () => {
+    const cookies = new Cookies();
+    const token = cookies.get("TOKEN");
+
+    if (!token) {
+      toast({
+        title: "Already Logged Out",
+        description: "You are not logged in.",
+        variant: "default",
+      });
+      router.push("/login");
+      return;
+    }
+
     try {
-      const response = await axios.get("/api/auth/logout");
+      const response = await axios.get("/api/auth/logout", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200 || response.status === 201) {
+        // Clear cookies
+        cookies.remove("TOKEN", { path: "/" });
+        cookies.remove("USERID", { path: "/" });
+
         toast({
           title: "Logout Successful",
           description: "You have been logged out successfully.",
@@ -25,18 +48,29 @@ export default function Logout() {
 
         toast({
           title: "Logout Failed",
-          description: `Failed to log out. Please try again. ${response.status}`,
+          description: `Server responded with status: ${response.status}. Please try again.`,
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error("Error during logout:", error);
+
       toast({
         title: "An Error Occurred",
-        description: `Failed to log out. Please try again. ${error}`,
+        description: `Unable to log out. ${error}`,
         variant: "destructive",
       });
     }
   };
 
-  return <Button onClick={handleLogout}>Logout</Button>;
+  return (
+    <Button
+      onClick={handleLogout}
+      aria-label="Log out from the application"
+      className="w-full bg-red-500 hover:bg-red-400 text-white"
+      role="button"
+    >
+      Logout
+    </Button>
+  );
 }

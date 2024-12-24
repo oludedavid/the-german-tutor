@@ -1,6 +1,6 @@
 "use client";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-
+import Cookies from "universal-cookie";
 import {
   Form,
   FormControl,
@@ -45,11 +45,18 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       const response = await axios.post("/api/auth/login", values);
-      console.log("Backend Response:", response.data?.data);
       toast({
         variant: "default",
         title: `Login was Successful: ${response.data?.message}`,
         description: "You can now login to your account.",
+      });
+      const cookies = new Cookies();
+
+      cookies.set("TOKEN", response.data?.data.token, {
+        path: "/",
+      });
+      cookies.set("USERID", response.data?.data.id, {
+        path: "/",
       });
 
       router.push("/");
@@ -84,7 +91,7 @@ export default function Login() {
               <Link
                 href="/register"
                 className="w-full border-none rounded-2xl"
-                aria-label="Login button"
+                aria-label="Navigate to registration page"
               >
                 Register
               </Link>
@@ -94,7 +101,8 @@ export default function Login() {
                 src="/images/login1.png"
                 width={300}
                 height={300}
-                alt="Illustration of registration"
+                alt="Illustration of registration process"
+                priority
               />
             </div>
           </div>
@@ -108,7 +116,9 @@ export default function Login() {
             <h1 className="text-3xl font-bold text-start">
               Login to your Account
             </h1>
-            <p className="text-start text-gray-600 mb-6">Welcome back! .</p>
+            <p className="text-start text-gray-600 mb-6">
+              Welcome back! Please log in to continue.
+            </p>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -122,6 +132,7 @@ export default function Login() {
                   placeholder="you@example.com"
                   iconSrc="/images/email-logo.png"
                   type="email"
+                  ariaLabel="Email input field"
                 />
 
                 {/* Password Field */}
@@ -132,12 +143,14 @@ export default function Login() {
                   placeholder="Your password"
                   iconSrc="/images/password-logo.png"
                   type="password"
+                  ariaLabel="Password input field"
                 />
 
                 <Button
                   type="submit"
                   className="w-full bg-gray-600 hover:bg-gray-400 text-white"
                   disabled={isSubmitting}
+                  aria-label="Submit login form"
                 >
                   {isSubmitting ? "Signing In..." : "Log In"}
                 </Button>
@@ -157,14 +170,15 @@ function FieldWithIcon({
   placeholder,
   iconSrc,
   type = "text",
+  ariaLabel,
 }: {
   label: string;
   name: keyof z.infer<typeof formSchema>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: any;
+  form: UseFormReturn<z.infer<typeof formSchema>>;
   placeholder: string;
   iconSrc: string;
   type?: string;
+  ariaLabel: string;
 }) {
   return (
     <FormField
@@ -182,7 +196,12 @@ function FieldWithIcon({
               alt={`${label} icon`}
             />
             <FormControl className="border-none w-full focus-visible:ring-0 focus-visible:ring-offset-0">
-              <Input type={type} placeholder={placeholder} {...field} />
+              <Input
+                type={type}
+                placeholder={placeholder}
+                {...field}
+                aria-label={ariaLabel} // Ensure aria-label is passed here
+              />
             </FormControl>
           </div>
           <FormMessage className="text-red-300" />

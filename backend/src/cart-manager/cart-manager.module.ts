@@ -14,9 +14,4 @@ import { AuthenticationManagerModule } from 'src/authentication-manager/authenti
   providers: [CartManagerService],
   controllers: [CartManagerController],
 })
-// export class CartManagerModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(AuthMiddleware).forRoutes('');
-//   }
-// }
 export class CartManagerModule {}

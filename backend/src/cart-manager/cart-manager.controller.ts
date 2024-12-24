@@ -3,7 +3,7 @@ import {
   Post,
   Get,
   Body,
-  Param,
+  Query,
   Patch,
   Delete,
 } from '@nestjs/common';
@@ -36,32 +36,35 @@ export class CartManagerController {
 
   /**
    * Retrieve a cart by ID
-   * @param id - Cart ID
+   * @param ownerId - Cart ID
    * @returns Cart with the specified ID
    */
-  @Get(':id')
-  findCartById(@Param('id') id: string) {
-    return this.cartManagerService.findCartById(id);
+  @Get()
+  findCartByOwnerId(@Query('ownerId') ownerId: string) {
+    return this.cartManagerService.findCartByOwnerId(ownerId);
   }
 
   /**
    * Update a cart and recalculate the total
-   * @param id - Cart ID
+   * @param ownerId - Owner ID
    * @param updateCartDto - Data to update the cart
    * @returns Updated cart
    */
-  @Patch(':id')
-  updateCart(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartManagerService.updateCart(id, updateCartDto);
+  @Patch('ownerId')
+  updateCart(
+    @Query('ownerId') ownerId: string,
+    @Body() updateCartDto: UpdateCartDto,
+  ) {
+    return this.cartManagerService.updateOwnerCart(ownerId, updateCartDto);
   }
 
   /**
-   * Delete a cart by ID
-   * @param id - Cart ID
+   * Delete a cart by owner ID
+   * @param id - Owner ID
    * @returns Confirmation of deletion
    */
-  @Delete(':id')
-  deleteCart(@Param('id') id: string) {
-    return this.cartManagerService.deleteCart(id);
+  @Delete('ownerId')
+  deleteCart(@Query('ownerId') ownerId: string) {
+    return this.cartManagerService.deleteCart(ownerId);
   }
 }

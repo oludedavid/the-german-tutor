@@ -10,7 +10,7 @@ export class Cart {
     ref: 'User',
     required: true,
   })
-  owner: string;
+  owner: Types.ObjectId;
 
   @Prop({
     type: [
@@ -39,7 +39,7 @@ export class Cart {
     default: [],
   })
   courses: {
-    courseOfferedId: string;
+    courseOfferedId: Types.ObjectId;
     name: string;
     quantity: number;
     price: number;
