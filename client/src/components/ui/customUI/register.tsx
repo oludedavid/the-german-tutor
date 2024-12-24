@@ -81,13 +81,16 @@ export default function Register() {
               Unlock your German fluency! Join our online bootcamp and master
               levels A1 to B2 with ease.
             </p>
-            <Link
-              href="/login"
-              className="w-1/3 border-none bg-gray-200 rounded-2xl"
-              aria-label="Login button"
-            >
-              Login
-            </Link>
+            <Button className="w-1/3">
+              <Link
+                href="/login"
+                className="w-full border-none rounded-2xl"
+                aria-label="Login button"
+              >
+                Login
+              </Link>
+            </Button>
+
             <div className="w-full h-96 flex justify-center items-center">
               <Image
                 src="/images/register1.png"

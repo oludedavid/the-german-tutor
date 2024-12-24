@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
-
+import { NextRequest, NextResponse } from "next/server";
+import { authenticationMiddleware } from "@/lib/auth-guard";
 const nextConfig: NextConfig = {
+  async middleware(request: NextRequest) {
+    // Apply middleware only to protected routes
+    if (request.nextUrl.pathname.startsWith("/logout")) {
+      return authenticationMiddleware(request);
+    }
+    return NextResponse.next();
+  },
   /* config options here */
   async headers() {
     return [

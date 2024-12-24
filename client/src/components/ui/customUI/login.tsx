@@ -80,13 +80,15 @@ export default function Login() {
               Want to be part of the best German learning community? Sign up
               below and start your journey toward fluency today!
             </p>
-            <Link
-              href="/register"
-              className="w-1/3 border-none bg-gray-200 rounded-2xl"
-              aria-label="Login button"
-            >
-              Signup
-            </Link>
+            <Button className="w-1/3">
+              <Link
+                href="/register"
+                className="w-full border-none rounded-2xl"
+                aria-label="Login button"
+              >
+                Register
+              </Link>
+            </Button>
             <div className="w-full h-96 flex justify-center items-center">
               <Image
                 src="/images/login1.png"
@@ -137,7 +139,7 @@ export default function Login() {
                   className="w-full bg-gray-600 hover:bg-gray-400 text-white"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Signing Up..." : "Sign Up"}
+                  {isSubmitting ? "Signing In..." : "Log In"}
                 </Button>
               </form>
             </Form>

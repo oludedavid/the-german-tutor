@@ -6,6 +6,10 @@ export type LoginBody = {
   email: string;
   password: string;
 };
+export const getCookie = async (name: string) => {
+  const cookieStore = await cookies();
+  return cookieStore.get(name)?.value ?? "";
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,6 +26,15 @@ export async function POST(req: NextRequest) {
       maxAge: 24 * 60 * 60,
       sameSite: "strict",
       secure: true,
+    });
+
+    axios.interceptors.request.use(async function (config) {
+      const accessToken = await getCookie("accessToken");
+      if (accessToken) {
+        // Attach the token as a cookie to the request
+        config.headers.Cookie = `accessToken=${accessToken}`;
+      }
+      return config;
     });
 
     return NextResponse.json(
