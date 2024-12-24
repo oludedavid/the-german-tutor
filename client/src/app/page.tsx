@@ -3,13 +3,13 @@ import { JwtPayload, jwtDecode } from "jwt-decode";
 import Logout from "@/components/ui/customUI/logout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+
 interface DecodedToken extends JwtPayload {
   email?: string;
   sub?: string;
 }
 
 export default async function Home() {
-  // Retrieve cookies
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken");
   let decodedToken: DecodedToken | undefined;
@@ -31,9 +31,19 @@ export default async function Home() {
 
   return (
     <div className="w-screen">
-      <p>{displayMessage}</p>
+      <p className="w-full text-center py-10 text-4xl font-bold ">
+        {displayMessage}
+      </p>
+      <div className="w-full flex flex-col justify-center items-center gap-4 p-4">
+        <p className="w-full text-center text-base font-light">
+          Der German Tutor ist immer da für Sie.
+        </p>
+        <p className="w-full text-center">Eine Ausgezeichnet Efahrugen.</p>
+      </div>
       {decodedToken ? (
-        <Logout />
+        <div className="w-full flex flex-row justify-center items-center gap-4">
+          <Logout />
+        </div>
       ) : (
         <div className="w-full flex flex-col justify-center items-center gap-4">
           <Button className="w-1/3 flex justify-center">
@@ -47,9 +57,9 @@ export default async function Home() {
           </Button>
           <Button className="w-1/3 flex justify-center">
             <Link
-              href="/login"
+              href="/register"
               className="w-full border-none rounded-2xl"
-              aria-label="Login button"
+              aria-label="Register button"
             >
               Register
             </Link>
