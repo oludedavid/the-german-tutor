@@ -21,4 +21,9 @@ export class AuthenticationManagerController {
   async loginUser(@Body() user: LoginUserDto): Promise<string> {
     return this.authService.loginUser(user);
   }
+
+  @Get('logout')
+  async logOutUser(): Promise<string> {
+    return this.authService.logoutUser();
+  }
 }

@@ -31,9 +31,11 @@ import { AuthMiddleware } from './middleware/auth.middleware';
   ],
   providers: [AuthenticationManagerService, AuthMiddleware],
   controllers: [AuthenticationManagerController],
+  exports: [JwtModule],
 })
-export class AuthenticationManagerModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('auth/logout');
-  }
-}
+// export class AuthenticationManagerModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(AuthMiddleware).forRoutes('auth/logout');
+//   }
+// }
+export class AuthenticationManagerModule {}
