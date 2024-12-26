@@ -44,7 +44,10 @@ export default function Login() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await axios.post("/api/auth/login", values);
+      const response = await axios.post(
+        "http://localhost:5001/auth/login",
+        values
+      );
       toast({
         variant: "default",
         title: `Login was Successful: ${response.data?.message}`,
@@ -52,10 +55,10 @@ export default function Login() {
       });
       const cookies = new Cookies();
 
-      cookies.set("TOKEN", response.data?.data.token, {
+      cookies.set("TOKEN", response.data?.token, {
         path: "/",
       });
-      cookies.set("USERID", response.data?.data.id, {
+      cookies.set("USERID", response.data?.id, {
         path: "/",
       });
 

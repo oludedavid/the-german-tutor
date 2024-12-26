@@ -16,9 +16,14 @@ export class CourseManagerService {
   ) {}
 
   // Create a new course
-  async createCourse(createCourseDto: CreateCourseDto): Promise<CourseOffered> {
-    const course = new this.courseModel(createCourseDto);
-    return course.save();
+  // Create multiple courses
+  async createCourses(
+    createCourseDtos: CreateCourseDto[],
+  ): Promise<CourseOffered[]> {
+    // Map over each DTO and create a Course instance
+    const courses = createCourseDtos.map((dto) => new this.courseModel(dto));
+    // Save all the created courses in the database
+    return this.courseModel.insertMany(courses);
   }
 
   // Update an existing course

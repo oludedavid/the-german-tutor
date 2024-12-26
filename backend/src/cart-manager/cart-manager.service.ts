@@ -24,25 +24,22 @@ export class CartManagerService {
 
   /**
    * Find all carts
-   * @returns Array of all carts with calculated totals
+   * @returns Array of all carts
    */
-  async findAllCarts(): Promise<(Cart & { totalBill: number })[]> {
-    const carts = await this.cartModel
+  async findAllCarts(): Promise<Cart[]> {
+    return this.cartModel
       .find()
       .populate('owner')
       .populate('courses.courseOfferedId')
       .exec();
-    return carts.map((cart) => this.calculateCartTotal(cart));
   }
 
   /**
-   * Find a single cart by ID and calculate its total
-   * @param ownerId - ID of the cart
-   * @returns The cart with calculated total
+   * Find a single cart by owner ID
+   * @param ownerId - ID of the cart's owner
+   * @returns The cart object
    */
-  async findCartByOwnerId(
-    ownerId: string,
-  ): Promise<Cart & { totalBill: number }> {
+  async findCartByOwnerId(ownerId: string): Promise<Cart> {
     const cart = await this.cartModel
       .findOne({ owner: new Types.ObjectId(ownerId) })
       .populate('owner')
@@ -55,60 +52,52 @@ export class CartManagerService {
       );
     }
 
-    return this.calculateCartTotal(cart);
+    return cart;
   }
 
   /**
-   * Update a cart's courses or quantities and recalculate the total
-   * @param ownerId - ID of the cart to update
+   * Update a cart's courses or quantities
+   * @param ownerId - ID of the cart's owner to update
    * @param updateData - Partial data to update the cart
-   * @returns Updated cart with calculated total
+   * @returns Updated cart object
    */
   async updateOwnerCart(
     ownerId: string,
     updateData: UpdateCartDto,
-  ): Promise<Cart & { totalBill: number }> {
+  ): Promise<Cart> {
     const cart = await this.cartModel
-      .findByIdAndUpdate(new Types.ObjectId(ownerId), updateData, { new: true })
+      .findOneAndUpdate({ owner: new Types.ObjectId(ownerId) }, updateData, {
+        new: true,
+      })
       .populate('owner')
       .populate('courses.courseOfferedId')
       .exec();
 
     if (!cart) {
-      throw new NotFoundException(`Cart with ownerId ${ownerId} not found`);
+      throw new NotFoundException(
+        `Cart for owner with ID ${ownerId} not found`,
+      );
     }
 
-    return this.calculateCartTotal(cart);
+    return cart;
   }
 
   /**
-   * Delete a cart by ID
+   * Delete a cart by owner ID
    * @param ownerId - ID of the cart to delete
    * @returns Confirmation message
    */
   async deleteCart(ownerId: string): Promise<{ message: string }> {
     const result = await this.cartModel
-      .findByIdAndDelete({ owner: new Types.ObjectId(ownerId) })
+      .findOneAndDelete({ owner: new Types.ObjectId(ownerId) })
       .exec();
 
     if (!result) {
-      throw new NotFoundException(`Cart with ownerId ${ownerId} not found`);
+      throw new NotFoundException(
+        `Cart for owner with ID ${ownerId} not found`,
+      );
     }
 
     return { message: `Cart with ID ${ownerId} deleted successfully` };
-  }
-
-  /**
-   * Calculate the total bill and return an updated cart object.
-   * @param cart - The cart document
-   * @returns The cart object with an added `totalBill` field
-   */
-  private calculateCartTotal(cart: CartDocument): Cart & { totalBill: number } {
-    const totalBill = cart.courses.reduce(
-      (sum, course) => sum + course.quantity * course.price,
-      0,
-    );
-
-    return { ...cart.toObject(), totalBill };
   }
 }

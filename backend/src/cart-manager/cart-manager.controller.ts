@@ -1,5 +1,6 @@
 import {
   Controller,
+  UseGuards,
   Post,
   Get,
   Body,
@@ -10,6 +11,7 @@ import {
 import { CreateCartDto } from './dtos/create-cart.dto';
 import { UpdateCartDto } from './dtos/update-cart.dto';
 import { CartManagerService } from './cart-manager.service';
+import { JwtAuthGuard } from 'src/authentication-manager/guard/jwt-guard';
 
 @Controller('cart')
 export class CartManagerController {
@@ -29,7 +31,8 @@ export class CartManagerController {
    * Retrieve all carts
    * @returns Array of carts
    */
-  @Get()
+  @UseGuards(JwtAuthGuard)
+  @Get('all')
   findAllCarts() {
     return this.cartManagerService.findAllCarts();
   }
@@ -39,6 +42,7 @@ export class CartManagerController {
    * @param ownerId - Cart ID
    * @returns Cart with the specified ID
    */
+  @UseGuards(JwtAuthGuard)
   @Get()
   findCartByOwnerId(@Query('ownerId') ownerId: string) {
     return this.cartManagerService.findCartByOwnerId(ownerId);

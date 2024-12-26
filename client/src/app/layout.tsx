@@ -5,9 +5,10 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html suppressHydrationWarning className="dark" lang="en">
+    <html suppressHydrationWarning={true} className="dark" lang="en">
+      <head></head>
       <body className="font-sans antialiased">
-        {children}
+        <main>{children}</main>
         <Toaster />
       </body>
     </html>

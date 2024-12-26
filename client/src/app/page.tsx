@@ -8,43 +8,40 @@ import { useEffect, useState } from "react";
 
 const Home = () => {
   const [userId, setUserId] = useState<string | null>(null);
-  const [isUserAvailable, setIsUserAvailable] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const cookies = new Cookies();
 
   useEffect(() => {
     const storedUserId = cookies.get("USERID");
     setUserId(storedUserId || null);
-    setIsUserAvailable(true);
+    setIsLoading(false);
   }, []);
 
-  if (!isUserAvailable) {
+  if (isLoading) {
     return (
-      <div className="w-screen">
-        <p className="w-full text-center py-10 text-4xl font-bold ">
-          Loading...
-        </p>
+      <div className="w-screen flex flex-col justify-center items-center">
+        <p className="text-xl font-semibold">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-screen">
-      <p className="w-full text-center py-10 text-4xl font-bold ">
-        {userId ? `Welcome back User: ${userId}` : "Join our community."}
+    <div className="w-screen flex flex-col items-center justify-center gap-6 p-6">
+      <p className="text-4xl font-bold text-center">
+        {userId ? `Welcome back, User: ${userId}` : "Join our community today."}
       </p>
-      <div className="w-full flex flex-col justify-center items-center gap-4 p-4">
-        <p className="w-full text-center text-base font-light">
+      <div className="w-full text-center">
+        <p className="text-base font-light">
           Der German Tutor ist immer da für Sie.
         </p>
-        <p className="w-full text-center">Eine Ausgezeichnet Efahrugen.</p>
+        <p>Eine Ausgezeichnet Erfahrung.</p>
       </div>
       {userId ? (
-        <div className="w-full flex flex-row justify-center items-center gap-4">
-          <div className="w-1/3">
+        <div className="flex flex-row gap-4">
+          <div>
             <Logout />
           </div>
-
-          <Button className="w-1/3 flex justify-center">
+          <Button className="flex justify-center">
             <Link
               href="/cart"
               className="w-full border-none rounded-2xl"
@@ -55,8 +52,8 @@ const Home = () => {
           </Button>
         </div>
       ) : (
-        <div className="w-full flex flex-col justify-center items-center gap-4">
-          <Button className="w-1/3 flex justify-center">
+        <div className="flex flex-col gap-4">
+          <Button className="w-full flex justify-center">
             <Link
               href="/login"
               className="w-full border-none rounded-2xl"
@@ -65,7 +62,7 @@ const Home = () => {
               Login
             </Link>
           </Button>
-          <Button className="w-1/3 flex justify-center">
+          <Button className="w-full flex justify-center">
             <Link
               href="/register"
               className="w-full border-none rounded-2xl"

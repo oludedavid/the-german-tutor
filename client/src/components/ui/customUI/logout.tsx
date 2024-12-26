@@ -25,14 +25,13 @@ export default function Logout() {
     }
 
     try {
-      const response = await axios.get("/api/auth/logout", {
+      const response = await axios.get("http://localhost:5001/auth/logout", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.status === 200 || response.status === 201) {
-        // Clear cookies
         cookies.remove("TOKEN", { path: "/" });
         cookies.remove("USERID", { path: "/" });
 

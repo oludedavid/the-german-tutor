@@ -14,17 +14,17 @@ export default function VerifyEmailPage() {
   const [verificationStatus, setVerificationStatus] = useState<string | null>(
     null
   );
-  const [isMounted, setIsMounted] = useState(false); // To check if client-side rendering has occurred
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // Set mounted to true after the first render
+    setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!token || !isMounted) return; // Only execute on the client and if token is available
+    if (!token || !isMounted) return;
 
     axios
-      .get("/api/auth/verify-email", { params: { token } })
+      .get("http://localhost:5001/auth/verify-email", { params: { token } })
       .then((response) => {
         if (response.data) {
           setVerificationStatus("success");
@@ -58,11 +58,11 @@ export default function VerifyEmailPage() {
   }, [token, router, toast, isMounted]);
 
   if (!isMounted) {
-    return null; // Render nothing until mounted to avoid hydration errors
+    return null;
   }
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50">
+    <div className="flex justify-center items-center h-screen dark">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         <h1 className="text-3xl font-bold text-center text-indigo-600">
           Verify Your Email

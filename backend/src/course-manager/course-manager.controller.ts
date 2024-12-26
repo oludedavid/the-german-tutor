@@ -6,6 +6,7 @@ import {
   Put,
   Delete,
   Get,
+  BadRequestException,
 } from '@nestjs/common';
 import { CourseManagerService } from './course-manager.service';
 import { CreateCourseDto } from './dtos/create-course.dto';
@@ -17,8 +18,17 @@ export class CourseManagerController {
 
   // Endpoint to create a new course
   @Post()
-  async createCourse(@Body() createCourseDto: CreateCourseDto) {
-    return this.courseManagerService.createCourse(createCourseDto);
+  async createCourses(@Body() createCourseDtos: CreateCourseDto[]) {
+    if (!Array.isArray(createCourseDtos)) {
+      throw new BadRequestException('Input must be an array of course DTOs.');
+    }
+    const createdCourses =
+      await this.courseManagerService.createCourses(createCourseDtos);
+
+    return {
+      message: 'Courses created successfully.',
+      data: createdCourses,
+    };
   }
 
   // Endpoint to update an existing course

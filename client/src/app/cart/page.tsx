@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Cart from "@/components/ui/customUI/cart";
 import Cookies from "universal-cookie";
 import Link from "next/link";
+import Cart from "@/components/ui/customUI/cart";
 
 interface CartItem {
   courseOfferedId: string;
@@ -14,55 +14,55 @@ interface CartItem {
 }
 
 export interface CartType {
+  _id: string;
   owner: {
     _id: string;
     fullName: string;
     email: string;
     isVerified: boolean;
-    role: string;
-    courseEnrolled: string[];
-    courseTaught: string[];
-    __v: number;
+    role?: string;
   };
   courses: CartItem[];
-  totalPrice: number;
+  __v: number;
 }
 
 export default function CartPage() {
-  const cookies = new Cookies();
-  const token = cookies.get("TOKEN");
-  const ownerId = cookies.get("USERID");
   const [cart, setCart] = useState<CartType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (ownerId && token) {
-      axios
-        .get(`/api/cart`, {
+    const fetchCart = async () => {
+      try {
+        const cookies = new Cookies();
+        const token = cookies.get("TOKEN");
+        const ownerId = cookies.get("USERID");
+
+        if (!ownerId || !token) {
+          setError("User is not authenticated. Please log in.");
+          setLoading(false);
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:5001/cart`, {
           params: { ownerId },
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        .then((response) => {
-          const cartData = response.data?.data;
-          setCart(cartData);
-          setLoading(false);
-        })
-        .catch((err) => {
-          const errorMessage =
-            err.response?.data?.message ||
-            "Something went wrong. Please try again later.";
-          console.error("Error fetching cart:", err);
-          setError(errorMessage);
-          setLoading(false);
         });
-    } else {
-      setError("User is not authenticated. Please log in.");
-      setLoading(false);
-    }
-  }, [ownerId, token]);
+
+        setCart(response.data);
+      } catch (err) {
+        const errorMessage = "Something went wrong. Please try again later.";
+        console.error("Error fetching cart:", err);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
 
   if (loading) {
     return (
@@ -88,7 +88,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart || cart.courses.length === 0) {
+  if (cart && cart.courses.length === 0) {
     return (
       <div className="w-full flex flex-col items-center justify-center">
         <p>Your cart is empty! Start adding courses.</p>
@@ -103,9 +103,5 @@ export default function CartPage() {
     );
   }
 
-  return (
-    <div>
-      <Cart cart={cart} />
-    </div>
-  );
+  return <Cart cart={cart!} />;
 }

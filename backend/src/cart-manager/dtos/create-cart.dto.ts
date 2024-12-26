@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class CourseItemDto {
+export class CourseItemDto {
   @IsMongoId()
   @IsNotEmpty()
   courseOfferedId: string;

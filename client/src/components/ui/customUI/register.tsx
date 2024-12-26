@@ -46,7 +46,10 @@ export default function Register() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await axios.post("/api/auth/register", values);
+      const response = await axios.post(
+        "http://localhost:5001/auth/register",
+        values
+      );
       toast({
         variant: "default",
         title: `Registration Successful - ${response.data.message}`,
