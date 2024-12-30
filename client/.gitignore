@@ -39,9 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-
-# Ignore images in the public folder
-/public/images/*
-/public/images
-/public

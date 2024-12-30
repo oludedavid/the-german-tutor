@@ -3,7 +3,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Spinner } from "@/components/ui/customUI/spinner";
+import { Spinner } from "@/components/custom-components/spinner";
 
 export default function VerifyEmailPage() {
   const router = useRouter();

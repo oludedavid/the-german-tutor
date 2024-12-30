@@ -2,18 +2,39 @@
 
 import Cookies from "universal-cookie";
 import Link from "next/link";
-import Logout from "@/components/ui/customUI/logout";
+import Logout from "@/components/custom-components/logout";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { decodeJwtToken } from "@/helper/decodeJwtToken";
 
 const Home = () => {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userData, setUserData] = useState<{
+    userId: string | null;
+    userName: string | null;
+    userEmail: string | null;
+  }>({
+    userId: null,
+    userName: null,
+    userEmail: null,
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const cookies = new Cookies();
 
   useEffect(() => {
-    const storedUserId = cookies.get("USERID");
-    setUserId(storedUserId || null);
+    const cookies = new Cookies();
+    const token = cookies.get("TOKEN");
+
+    if (token) {
+      const decoded = decodeJwtToken(token);
+
+      if (decoded?.decodedJwtToken?.sub) {
+        setUserData({
+          userId: decoded.decodedJwtToken.sub,
+          userName: decoded.decodedJwtToken.username || null,
+          userEmail: decoded.decodedJwtToken.email || null,
+        });
+      }
+    }
+
     setIsLoading(false);
   }, []);
 
@@ -28,7 +49,9 @@ const Home = () => {
   return (
     <div className="w-screen flex flex-col items-center justify-center gap-6 p-6">
       <p className="text-4xl font-bold text-center">
-        {userId ? `Welcome back, User: ${userId}` : "Join our community today."}
+        {userData.userId
+          ? `Welcome back, User: ${userData.userName} Email: ${userData.userEmail}`
+          : "Join our community today."}
       </p>
       <div className="w-full text-center">
         <p className="text-base font-light">
@@ -36,7 +59,7 @@ const Home = () => {
         </p>
         <p>Eine Ausgezeichnet Erfahrung.</p>
       </div>
-      {userId ? (
+      {userData.userId ? (
         <div className="flex flex-row gap-4">
           <div>
             <Logout />

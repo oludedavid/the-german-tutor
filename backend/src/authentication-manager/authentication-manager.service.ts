@@ -34,10 +34,12 @@ export class AuthenticationManagerService {
 
   async generateToken(user: UserDocument): Promise<string> {
     const payload = {
-      email: user.email,
       sub: user._id,
+      email: user.email,
+      username: user.fullName,
+      role: user.role,
     };
-    const token = this.jwtService.sign(payload);
+    const token = await this.jwtService.signAsync(payload);
     return token;
   }
 
@@ -234,9 +236,6 @@ export class AuthenticationManagerService {
     const token = await this.generateToken(existingUser);
     return JSON.stringify({
       token,
-      role: existingUser.role,
-      fullName: existingUser.fullName,
-      id: existingUser._id,
     });
   }
 

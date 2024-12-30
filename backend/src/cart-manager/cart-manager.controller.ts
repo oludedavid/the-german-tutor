@@ -22,6 +22,7 @@ export class CartManagerController {
    * @param createCartDto - Data Transfer Object for creating a cart
    * @returns Created cart
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   createCart(@Body() createCartDto: CreateCartDto) {
     return this.cartManagerService.createCart(createCartDto);
@@ -54,6 +55,7 @@ export class CartManagerController {
    * @param updateCartDto - Data to update the cart
    * @returns Updated cart
    */
+  @UseGuards(JwtAuthGuard)
   @Patch('ownerId')
   updateCart(
     @Query('ownerId') ownerId: string,
@@ -67,6 +69,7 @@ export class CartManagerController {
    * @param id - Owner ID
    * @returns Confirmation of deletion
    */
+  @UseGuards(JwtAuthGuard)
   @Delete('ownerId')
   deleteCart(@Query('ownerId') ownerId: string) {
     return this.cartManagerService.deleteCart(ownerId);

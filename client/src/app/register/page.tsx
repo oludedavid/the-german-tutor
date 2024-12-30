@@ -1,6 +1,6 @@
 "use client";
 
-import Register from "@/components/ui/customUI/register";
+import Register from "@/components/custom-components/register";
 
 export default function RegisterPage() {
   return (
