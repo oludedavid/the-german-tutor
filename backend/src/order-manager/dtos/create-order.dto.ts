@@ -3,17 +3,11 @@ import { Types } from 'mongoose';
 
 export class CreateOrderDto {
   @IsMongoId()
-  readonly owner: Types.ObjectId;
+  readonly ownerId: Types.ObjectId;
 
   @IsMongoId()
-  readonly cart: Types.ObjectId;
+  readonly cartId: Types.ObjectId;
 
   @IsNumber()
   readonly totalAmount: number;
-
-  @IsEnum(['credit_card', 'paypal', 'flutterwave', 'bank_transfer'])
-  readonly paymentMethod: string;
-
-  @IsEnum(['pending', 'completed', 'failed'])
-  readonly paymentStatus: string;
 }

@@ -6,8 +6,13 @@ import Logout from "@/components/custom-components/logout";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { decodeJwtToken } from "@/helper/decodeJwtToken";
+import usePersistStore from "@/helper/usePersistStore";
+import { useCartStore } from "./store/_store/useCartStore";
 
 const Home = () => {
+  const store = usePersistStore(useCartStore, (state) => state);
+  const userId = store?.cartOwner;
+
   const [userData, setUserData] = useState<{
     userId: string | null;
     userName: string | null;
@@ -50,7 +55,7 @@ const Home = () => {
     <div className="w-screen flex flex-col items-center justify-center gap-6 p-6">
       <p className="text-4xl font-bold text-center">
         {userData.userId
-          ? `Welcome back, User: ${userData.userName} Email: ${userData.userEmail}`
+          ? `Welcome back, User: ${userData.userName} Email: ${userData.userEmail} Userid: ${userId}`
           : "Join our community today."}
       </p>
       <div className="w-full text-center">

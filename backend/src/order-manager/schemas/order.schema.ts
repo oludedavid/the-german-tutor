@@ -10,14 +10,14 @@ export class Order {
     required: true,
     ref: 'User',
   })
-  owner: Types.ObjectId;
+  ownerId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
     required: true,
     ref: 'Cart',
   })
-  cart: Types.ObjectId;
+  cartId: Types.ObjectId;
 
   @Prop({
     type: Number,
@@ -28,21 +28,21 @@ export class Order {
 
   @Prop({
     type: String,
-    enum: ['pending', 'shipped', 'delivered', 'canceled'],
+    enum: ['pending', 'success', 'canceled', 'failed'],
     default: 'pending',
   })
   orderStatus: string;
 
   @Prop({
     type: String,
-    enum: ['credit_card', 'paypal', 'flutterwave', 'bank_transfer'],
-    required: true,
+    enum: ['paypal', 'paystack'],
+    default: 'paypal',
   })
   paymentMethod: string;
 
   @Prop({
     type: String,
-    enum: ['pending', 'completed', 'failed'],
+    enum: ['pending', 'success', 'canceled', 'failed'],
     default: 'pending',
   })
   paymentStatus: string;

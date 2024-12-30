@@ -16,7 +16,6 @@ import { UpdateCourseDto } from './dtos/update-course.dto';
 export class CourseManagerController {
   constructor(private readonly courseManagerService: CourseManagerService) {}
 
-  // Endpoint to create a new course
   @Post()
   async createCourses(@Body() createCourseDtos: CreateCourseDto[]) {
     if (!Array.isArray(createCourseDtos)) {
@@ -31,7 +30,6 @@ export class CourseManagerController {
     };
   }
 
-  // Endpoint to update an existing course
   @Put(':courseId')
   async updateCourse(
     @Param('courseId') courseId: string,
@@ -40,19 +38,16 @@ export class CourseManagerController {
     return this.courseManagerService.updateCourse(courseId, updateCourseDto);
   }
 
-  // Endpoint to delete a course
   @Delete(':courseId')
   async deleteCourse(@Param('courseId') courseId: string) {
     return this.courseManagerService.deleteCourse(courseId);
   }
 
-  // Endpoint to get a specific course by ID
   @Get(':courseId')
   async getCourseById(@Param('courseId') courseId: string) {
     return this.courseManagerService.getCourseById(courseId);
   }
 
-  // Endpoint to get all courses
   @Get()
   async getAllCourses() {
     return this.courseManagerService.getAllCourses();

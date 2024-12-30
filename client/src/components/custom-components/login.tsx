@@ -9,6 +9,9 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import Cookies from "universal-cookie";
 import { QueryDatabase } from "@/helper/queryDatabase";
+import { useCartStore } from "@/app/store/_store/useCartStore";
+import usePersistStore from "@/helper/usePersistStore";
+import { decodeJwtToken } from "@/helper/decodeJwtToken";
 import {
   Form,
   FormControl,
@@ -30,6 +33,9 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  const store = usePersistStore(useCartStore, (state) => state);
+  const setCartOwnerId = store?.assignCartOwner;
+
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,6 +73,17 @@ export default function Login() {
       cookies.set("TOKEN", response.data?.token, {
         path: "/",
       });
+
+      const token = cookies.get("TOKEN");
+
+      const decodedToken = decodeJwtToken(token);
+
+      if (decodedToken?.decodedJwtToken?.sub) {
+        setCartOwnerId?.(decodedToken.decodedJwtToken.sub);
+        store?.setLoginStatus(true);
+      } else {
+        throw new Error("Invalid token. Could not extract user ID.");
+      }
 
       router.push("/");
     } catch (error) {

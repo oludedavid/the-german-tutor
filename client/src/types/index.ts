@@ -7,17 +7,8 @@ export interface ICartItem {
   price: number;
 }
 
-export interface ICartOwner {
-  _id: string;
-  fullName: string;
-  email: string;
-  isVerified: boolean;
-  role: string;
-}
-
 export interface ICart {
-  _id: string;
-  owner: ICartOwner;
+  owner: string;
   courses: ICartItem[];
 }
 
@@ -41,4 +32,13 @@ export interface ICustomJwtPayload extends JwtPayload {
   username?: string | null;
   email?: string | null;
   role?: string | null;
+}
+
+export interface IOrder {
+  ownerId: string;
+  cartId: string;
+  totalAmount: number;
+  orderStatus: "pending" | "success" | "canceled";
+  paymentMethod?: "paypal" | "paystack";
+  paymentStatus?: "pending" | "completed" | "failed";
 }
