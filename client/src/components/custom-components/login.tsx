@@ -119,7 +119,7 @@ export default function Login() {
                 className="w-full border-none rounded-2xl"
                 aria-label="Navigate to registration page"
               >
-                Register
+                Sign Up
               </Link>
             </Button>
             <div className="w-full h-96 flex justify-center items-center">
@@ -136,8 +136,8 @@ export default function Login() {
       </div>
 
       {/* Right Section */}
-      <div className="w-full lg:w-11/12 h-screen lg:px-8 lg:pt-8">
-        <div className="bg-[#5368C51C] w-full h-full flex flex-col items-center lg:justify-start lg:pt-24">
+      <div className="w-full lg:w-11/12 h-auto lg:px-8 lg:pt-8">
+        <div className=" w-full h-4/5 flex flex-col items-center p-8 lg:justify-start lg:pt-24 border-t-2">
           <div className="w-full lg:w-7/12 p-6 rounded-lg shadow-md">
             <h1 className="text-3xl font-bold text-start">
               Login to your Account
@@ -178,7 +178,7 @@ export default function Login() {
                   disabled={isSubmitting}
                   aria-label="Submit login form"
                 >
-                  {isSubmitting ? "Signing In..." : "Log In"}
+                  {isSubmitting ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
             </Form>

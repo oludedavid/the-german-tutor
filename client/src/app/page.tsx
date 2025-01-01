@@ -1,9 +1,6 @@
 "use client";
 
 import Cookies from "universal-cookie";
-import Link from "next/link";
-import Logout from "@/components/custom-components/logout";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { decodeJwtToken } from "@/helper/decodeJwtToken";
 import usePersistStore from "@/helper/usePersistStore";
@@ -64,43 +61,6 @@ const Home = () => {
         </p>
         <p>Eine Ausgezeichnet Erfahrung.</p>
       </div>
-      {userData.userId ? (
-        <div className="flex flex-row gap-4">
-          <div>
-            <Logout />
-          </div>
-          <Button className="flex justify-center">
-            <Link
-              href="/cart"
-              className="w-full border-none rounded-2xl"
-              aria-label="Cart button"
-            >
-              Cart
-            </Link>
-          </Button>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <Button className="w-full flex justify-center">
-            <Link
-              href="/login"
-              className="w-full border-none rounded-2xl"
-              aria-label="Login button"
-            >
-              Login
-            </Link>
-          </Button>
-          <Button className="w-full flex justify-center">
-            <Link
-              href="/register"
-              className="w-full border-none rounded-2xl"
-              aria-label="Register button"
-            >
-              Register
-            </Link>
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

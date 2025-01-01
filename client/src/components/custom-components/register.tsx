@@ -90,7 +90,7 @@ export default function Register() {
                 className="w-full border-none rounded-2xl"
                 aria-label="Login button"
               >
-                Login
+                Sign In
               </Link>
             </Button>
 
@@ -109,7 +109,7 @@ export default function Register() {
 
       {/* Right Section */}
       <div className="w-full lg:w-11/12 h-screen lg:px-8 lg:pt-8">
-        <div className="bg-[#5368C51C] w-full h-full flex flex-col items-center lg:justify-start lg:pt-24">
+        <div className="w-full h-4/5 flex flex-col items-center lg:justify-start lg:pt-24">
           <div className="w-full lg:w-7/12 p-6 rounded-lg shadow-md">
             <h1 className="text-3xl font-bold text-start">Create an Account</h1>
             <p className="text-start text-gray-600 mb-6">

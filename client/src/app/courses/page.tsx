@@ -50,7 +50,7 @@ export default function CoursePage() {
   }
 
   return (
-    <div>
+    <div className="w-full px-20">
       <h1>Course Page</h1>
       <div className="flex flex-col lg:flex-row flex-wrap justify-center ">
         {courses.length > 0 ? (
