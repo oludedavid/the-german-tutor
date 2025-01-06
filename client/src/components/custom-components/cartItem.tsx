@@ -1,18 +1,23 @@
 import { ICourse } from "@/types";
-//import CartServices from "@/services/cartService";
+import { useToast } from "@/hooks/use-toast";
 import { useCartStore } from "@/app/store/_store/useCartStore";
+import usePersistStore from "@/helper/usePersistStore";
 
 interface CartItemProps {
   course: ICourse;
 }
 
 export default function CartItem({ course }: CartItemProps) {
-  //const cartServices = new CartServices();
-  const removeItemFromCart = useCartStore((state) => state.removeItemFromCart);
+  const { toast } = useToast();
+  const store = usePersistStore(useCartStore, (state) => state);
 
   const handleRemove = () => {
-    removeItemFromCart(course);
-    alert(`${course.courseName} has been removed from the cart.`);
+    store?.removeItemFromCart(course);
+    toast({
+      title: "Item removed from cart",
+      description: `${course.courseName} has been removed from the cart.`,
+      duration: 4000,
+    });
   };
 
   return (

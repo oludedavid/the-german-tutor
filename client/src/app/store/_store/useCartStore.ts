@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { ICourse } from "@/types";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { SecureStorageHelper } from "@/helper/secureStorage";
 
-// State types
 interface States {
   cartOwner?: string;
   cartItems: ICourse[];
@@ -11,27 +11,24 @@ interface States {
   isLoggedIn: boolean;
 }
 
-// Action types
 interface Actions {
   addItemToCart: (item: ICourse) => void;
   setCartItems: (items: ICourse[]) => void;
   removeItemFromCart: (item: ICourse) => void;
   assignCartOwner: (userId: string) => void;
   setLoginStatus: (status: boolean) => void;
+  clearCart: () => void;
 }
 
-// useCountStore
 export const useCartStore = create(
   persist<States & Actions>(
     (set, get) => ({
-      // States
       cartOwner: undefined,
       cartItems: [],
       totalItems: 0,
       totalPrice: 0,
       isLoggedIn: false,
 
-      // Actions
       addItemToCart: (item: ICourse) => {
         const cartItems = get().cartItems;
         const existingItem = cartItems.find(
@@ -47,15 +44,19 @@ export const useCartStore = create(
           set((state) => ({
             cartItems: updatedCart,
             totalItems: state.totalItems + 1,
-            totalPrice: state.totalPrice + item.price,
           }));
         } else {
           set((state) => ({
             cartItems: [...cartItems, { ...item, quantity: 1 }],
             totalItems: state.totalItems + 1,
-            totalPrice: state.totalPrice + item.price,
           }));
         }
+
+        const newTotalPrice = get().cartItems.reduce(
+          (acc, item) => acc + item.price * (item.quantity ?? 1),
+          0
+        );
+        set({ totalPrice: newTotalPrice });
       },
 
       setCartItems: (items: ICourse[]) => {
@@ -79,14 +80,14 @@ export const useCartStore = create(
         const updatedCart = cartItems.filter(
           (cartItem) => cartItem._id !== item._id
         );
-        const removedItem = cartItems.find(
-          (cartItem) => cartItem._id === item._id
+        const newTotalPrice = updatedCart.reduce(
+          (acc, cartItem) => acc + cartItem.price * (cartItem.quantity ?? 1),
+          0
         );
-
         set((state) => ({
           cartItems: updatedCart,
           totalItems: state.totalItems - 1,
-          totalPrice: state.totalPrice - (removedItem ? removedItem.price : 0),
+          totalPrice: newTotalPrice,
         }));
       },
 
@@ -101,10 +102,29 @@ export const useCartStore = create(
           isLoggedIn: status,
         }));
       },
+      clearCart: () => {
+        set(() => ({
+          cartItems: [],
+          totalItems: 0,
+          totalPrice: 0,
+        }));
+      },
     }),
     {
       name: "cart-store",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => ({
+        getItem: (name: string): Promise<string | null> => {
+          return Promise.resolve(SecureStorageHelper.getItem(name));
+        },
+        setItem: (name: string, value: string): Promise<void> => {
+          SecureStorageHelper.setItem(name, value);
+          return Promise.resolve();
+        },
+        removeItem: (name: string): Promise<void> => {
+          SecureStorageHelper.removeItem(name);
+          return Promise.resolve();
+        },
+      })),
     }
   )
 );

@@ -10,6 +10,7 @@ import { ICartItem } from "@/types";
 import Cookies from "universal-cookie";
 import fetchWithParams from "@/helper/apiHelper";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -18,6 +19,7 @@ export default function CartPage() {
   const cookies = new Cookies();
   const storedToken = cookies.get("TOKEN");
   const store = usePersistStore(useCartStore, (state) => state);
+  const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [cartId, setCartId] = useState<string | null>(null);
   const router = useRouter();
@@ -43,13 +45,21 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (!storedToken) {
-      alert("You need to log in to proceed with checkout.");
+      toast({
+        title: "Login Status",
+        description: `You need to log in or register to proceed with checkout.`,
+        duration: 3000,
+      });
       router.push("/login");
       return;
     }
 
     if (!store?.cartItems || store.cartItems.length === 0) {
-      alert("Your cart is empty. Add items before proceeding to checkout.");
+      toast({
+        title: "Empty Cart",
+        description: `Your cart is empty. Add items before proceeding to checkout.`,
+        duration: 3000,
+      });
       return;
     }
 
@@ -82,12 +92,20 @@ export default function CartPage() {
       );
 
       const { cartResponse, orderResponse } = await orderService.checkout();
+      //do something witht he cartResponse and orderResponse
       console.log("Checkout successful!", { cartResponse, orderResponse });
-
-      alert("Checkout successful! Your order has been placed.");
+      toast({
+        title: "Checkout Status",
+        description: `Checkout successful! Your order has been placed.`,
+        duration: 3000,
+      });
     } catch (error) {
       console.error("Checkout failed:", error);
-      alert("Failed to complete checkout. Please try again.");
+      toast({
+        title: "Checkout Status",
+        description: `Failed to complete checkout. Please try again.`,
+        duration: 3000,
+      });
     } finally {
       setIsCheckingOut(false);
     }
@@ -104,7 +122,7 @@ export default function CartPage() {
           </p>
           <Link
             className="bg-blue-500 text-white px-4 py-2 my-3 inline-block"
-            href={`/courses`}
+            href={`/course`}
           >
             Browse courses
           </Link>
@@ -121,8 +139,8 @@ export default function CartPage() {
 
           <div className="mt-6 border-t pt-4">
             <p className="text-lg font-bold">
-              Total ({store?.totalItems ?? 0} item
-              {(store?.totalItems ?? 0) > 1 ? "s" : ""}
+              Total ({store?.cartItems.length ?? 0} item
+              {(store?.cartItems.length ?? 0) > 1 ? "s" : ""}
               ): ${store?.totalPrice?.toFixed(2) ?? 0.0}
             </p>
           </div>

@@ -1,20 +1,24 @@
 import Image from "next/image";
 import { ICourse } from "@/types";
 import { Button } from "@/components/ui/button";
-//import CartServices from "@/services/cartService";
+import { useToast } from "@/hooks/use-toast";
 import { useCartStore } from "@/app/store/_store/useCartStore";
-
+import usePersistStore from "@/helper/usePersistStore";
+import Link from "next/link";
 interface CourseProps {
   course: ICourse;
 }
 
 export default function Course({ course }: CourseProps) {
-  //const cartServices = new CartServices();
-  const { addItemToCart } = useCartStore((state) => state);
-
+  const store = usePersistStore(useCartStore, (state) => state);
+  const { toast } = useToast();
   const handleAddToCart = () => {
-    addItemToCart(course);
-    alert("Item was added to cart");
+    store?.addItemToCart(course);
+    toast({
+      title: "Item added to cart",
+      description: `${course.courseName} has been added to your cart.`,
+      duration: 4000,
+    });
   };
 
   return (
@@ -46,6 +50,7 @@ export default function Course({ course }: CourseProps) {
         className="mb-4"
       />
       <Button onClick={handleAddToCart}>Add to Cart</Button>
+      <Link href={`/courses/${course._id}`}>Read More</Link>
     </div>
   );
 }
