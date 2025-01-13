@@ -5,8 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import Auth from "@/helper/fetchData/auth";
+import { useMutation } from "@tanstack/react-query";
+
 import {
   Form,
   FormControl,
@@ -42,31 +44,34 @@ export default function Register() {
       password: "",
     },
   });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    try {
-      const response = await axios.post(
-        "http://localhost:5001/auth/register",
-        values
-      );
+  const mutation = useMutation({
+    mutationFn: (values: z.infer<typeof formSchema>) => {
+      const auth = new Auth();
+      return auth.registerUser(values);
+    },
+    onSuccess: (message) => {
       toast({
         variant: "default",
-        title: `Registration Successful - ${response.data.message}`,
-        description:
-          "You can now check your email to verify your address and activate your account.",
+        title: `Registration Successful`,
+        description: message,
       });
       form.reset();
-    } catch (error) {
+      setIsSubmitting(false);
+    },
+    onError: (error: string) => {
       toast({
         variant: "destructive",
         title: "Registration Failed",
         description: `Please try again later. ${error}`,
       });
-    } finally {
       setIsSubmitting(false);
-    }
-  }
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    mutation.mutate(values);
+  };
 
   return (
     <div className="w-full flex flex-col lg:flex-row justify-center">

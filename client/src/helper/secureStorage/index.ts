@@ -10,8 +10,7 @@ const SECURE_STORAGE_SECRET_KEY =
   generateSecureKey();
 
 export class SecureStorageHelper {
-  private static readonly SECRET_KEY =
-    SECURE_STORAGE_SECRET_KEY || "default-secret-key";
+  private static readonly SECRET_KEY = SECURE_STORAGE_SECRET_KEY;
 
   static encrypt<T>(data: T): string {
     if (!this.SECRET_KEY) {

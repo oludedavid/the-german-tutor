@@ -1,10 +1,9 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Spinner } from "@/components/custom-components/spinner";
-
+import Auth from "@/helper/fetchData/auth";
 export default function VerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,15 +22,16 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     if (!token || !isMounted) return;
 
-    axios
-      .get("http://localhost:5001/auth/verify-email", { params: { token } })
-      .then((response) => {
-        if (response.data) {
+    const verifyEmail = async () => {
+      const auth = new Auth();
+      try {
+        const message = await auth.verifyEmail(token);
+        if (message) {
           setVerificationStatus("success");
           toast({
             variant: "default",
             title: "Email Verified",
-            description: "You can now login to your account.",
+            description: message,
           });
           router.push("/login");
         } else {
@@ -39,22 +39,23 @@ export default function VerifyEmailPage() {
           toast({
             variant: "destructive",
             title: "Verification Failed",
-            description:
-              response.data || "Something went wrong. Please try again.",
+            description: "Something went wrong. Please try again.",
           });
         }
-      })
-      .catch((error) => {
+      } catch (e) {
+        console.error(e);
         setVerificationStatus("failed");
         toast({
           variant: "destructive",
-          title: `Verification Failed: ${error}`,
-          description: "Something went wrong. Please try again.",
+          title: "Verification Failed",
+          description: "An error occurred. Please try again.",
         });
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    verifyEmail();
   }, [token, router, toast, isMounted]);
 
   if (!isMounted) {

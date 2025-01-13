@@ -2,7 +2,6 @@
 import Link from "next/link";
 //import Image from "next/image";
 import { usePathname } from "next/navigation";
-import Cookies from "universal-cookie";
 import { useState, useEffect } from "react";
 import usePersistStore from "@/helper/usePersistStore";
 import { useCartStore } from "@/app/store/_store/useCartStore";
@@ -14,14 +13,10 @@ export default function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const cookies = new Cookies();
-    const token = cookies.get("TOKEN");
-    if (token) {
+    if (store?.isLoggedIn) {
       setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
     }
-  }, []);
+  }, [store?.isLoggedIn]);
 
   function getNumberOfItemsInCart() {
     return store?.cartItems.length;

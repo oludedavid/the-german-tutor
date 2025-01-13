@@ -23,11 +23,11 @@ const Home = () => {
     if (token) {
       const decoded = decodeJwtToken(token);
 
-      if (decoded?.decodedJwtToken?.sub) {
+      if (decoded?.sub) {
         setUserData({
-          userId: decoded.decodedJwtToken.sub,
-          userName: decoded.decodedJwtToken.username || null,
-          userEmail: decoded.decodedJwtToken.email || null,
+          userId: decoded.sub || null,
+          userName: decoded.username || null,
+          userEmail: decoded.email || null,
         });
       }
     }

@@ -50,7 +50,7 @@ export default function Course({ course }: CourseProps) {
         className="mb-4"
       />
       <Button onClick={handleAddToCart}>Add to Cart</Button>
-      <Link href={`/courses/${course._id}`}>Read More</Link>
+      <Link href={`/course/${course._id}`}>Read More</Link>
     </div>
   );
 }

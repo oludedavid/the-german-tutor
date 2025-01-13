@@ -4,14 +4,13 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import Cookies from "universal-cookie";
-import { QueryDatabase } from "@/helper/queryDatabase";
+import Auth from "@/helper/fetchData/auth";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/app/store/_store/useCartStore";
 import usePersistStore from "@/helper/usePersistStore";
-import { decodeJwtToken } from "@/helper/decodeJwtToken";
 import {
   Form,
   FormControl,
@@ -24,82 +23,53 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  email: z.string().email("Please enter a valid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
 export default function Login() {
-  const store = usePersistStore(useCartStore, (state) => state);
-  const setCartOwnerId = store?.assignCartOwner;
-
   const { toast } = useToast();
   const router = useRouter();
+  const store = usePersistStore(useCartStore, (state) => state);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-
-    const queryDatabase = new QueryDatabase(
-      "http://localhost:5001/auth/login",
-      "",
-      "",
-      values
-    );
-
-    try {
-      const response = await queryDatabase.addDataToDatabase();
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
+  const mutation = useMutation({
+    mutationFn: (values: z.infer<typeof formSchema>) => {
+      const auth = new Auth();
+      return auth.login(values);
+    },
+    onSuccess: (message) => {
       toast({
         variant: "default",
-        title: `Login was Successful: ${response.message}`,
-        description: "You can now log in to your account.",
+        title: `Login Successful`,
+        description: message,
       });
-
-      const cookies = new Cookies();
-      cookies.set("TOKEN", response.data?.token, {
-        path: "/",
-      });
-
-      const token = cookies.get("TOKEN");
-
-      const decodedToken = decodeJwtToken(token);
-
-      if (decodedToken?.decodedJwtToken?.sub) {
-        setCartOwnerId?.(decodedToken.decodedJwtToken.sub);
-        store?.setLoginStatus(true);
-      } else {
-        throw new Error("Invalid token. Could not extract user ID.");
-      }
-
+      store?.setLoginStatus(true);
+      form.reset();
+      setIsSubmitting(false);
       router.push("/");
-    } catch (error) {
+    },
+    onError: (error: string) => {
       toast({
         variant: "destructive",
         title: "Login Failed",
         description: `Please try again later. ${error}`,
       });
-    } finally {
       setIsSubmitting(false);
-    }
-  }
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    mutation.mutate(values);
+  };
 
   return (
     <div className="w-full flex flex-col lg:flex-row justify-center">
-      {/* Left Section */}
       <div className="bg-transparent h-screen w-full lg:w-5/12 px-8 pt-8">
         <div className="w-full h-full flex flex-col items-center gap-12 lg:gap-24">
           <p className="w-full font-bold text-center text-xl p-3">
@@ -134,10 +104,8 @@ export default function Login() {
           </div>
         </div>
       </div>
-
-      {/* Right Section */}
       <div className="w-full lg:w-11/12 h-auto lg:px-8 lg:pt-8">
-        <div className=" w-full h-4/5 flex flex-col items-center p-8 lg:justify-start lg:pt-24 border-t-2">
+        <div className="w-full h-4/5 flex flex-col items-center p-8 lg:justify-start lg:pt-24 border-t-2">
           <div className="w-full lg:w-7/12 p-6 rounded-lg shadow-md">
             <h1 className="text-3xl font-bold text-start">
               Login to your Account
@@ -150,7 +118,6 @@ export default function Login() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                {/* Email Field */}
                 <FieldWithIcon
                   label="Email Address"
                   name="email"
@@ -160,8 +127,6 @@ export default function Login() {
                   type="email"
                   ariaLabel="Email input field"
                 />
-
-                {/* Password Field */}
                 <FieldWithIcon
                   label="Password"
                   name="password"
@@ -171,7 +136,6 @@ export default function Login() {
                   type="password"
                   ariaLabel="Password input field"
                 />
-
                 <Button
                   type="submit"
                   className="w-full bg-gray-600 hover:bg-gray-400 text-white"
@@ -189,6 +153,17 @@ export default function Login() {
   );
 }
 
+type FieldWithIconProps = {
+  label: string;
+  name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
+  placeholder: string;
+  iconSrc: string;
+  type?: string;
+  ariaLabel: string;
+};
+
 function FieldWithIcon({
   label,
   name,
@@ -197,15 +172,7 @@ function FieldWithIcon({
   iconSrc,
   type = "text",
   ariaLabel,
-}: {
-  label: string;
-  name: keyof z.infer<typeof formSchema>;
-  form: UseFormReturn<z.infer<typeof formSchema>>;
-  placeholder: string;
-  iconSrc: string;
-  type?: string;
-  ariaLabel: string;
-}) {
+}: FieldWithIconProps) {
   return (
     <FormField
       control={form.control}
@@ -226,7 +193,7 @@ function FieldWithIcon({
                 type={type}
                 placeholder={placeholder}
                 {...field}
-                aria-label={ariaLabel} // Ensure aria-label is passed here
+                aria-label={ariaLabel}
               />
             </FormControl>
           </div>

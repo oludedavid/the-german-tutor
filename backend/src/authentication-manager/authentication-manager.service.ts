@@ -54,20 +54,33 @@ export class AuthenticationManagerService {
       to: email,
       subject: 'Verify Your Email Address',
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2>Welcome to Our The German Tutor Platform!</h2>
-          <p>Hi ${fullName},</p>
-          <p>Please verify your email address by clicking the button below:</p>
-          <p style="text-align: center;">
-            <a href="${verificationUrl}" 
-              style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">
-              Verify Email
-            </a>
-          </p>
-          <p>If the button doesn't work, use the following link:</p>
-          <p>${verificationUrl}</p>
-          <p>If you didn't request this registration, please ignore this email or contact support.</p>
-        </div>
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #1a73e8; padding: 20px; border-radius: 8px 8px 0 0; color: #fff;">
+        <h2 style="font-size: 24px; margin: 0;">Willkommen bei der Deutschen Tutor Plattform!</h2>
+     </div>
+
+     <div style="background-color: #fff; padding: 30px; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px; color: #555;">Hallo ${fullName},</p>
+        <p style="font-size: 16px; color: #555;">
+           Bitte bestätigen Sie Ihre E-Mail-Adresse, indem Sie auf den untenstehenden Button klicken:
+        </p>
+
+        <p style="text-align: center; margin: 20px 0;">
+        <a href="${verificationUrl}"
+        style="display: inline-block; padding: 12px 25px; font-size: 18px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 50px; transition: background-color 0.3s ease;">
+        E-Mail Bestätigen
+         </a>
+        </p>
+
+    <p style="font-size: 16px; color: #555;">
+      Falls Sie diese Registrierung nicht angefordert haben, ignorieren Sie bitte diese E-Mail oder kontaktieren Sie unseren Support.
+    </p>
+     </div>
+
+  <div style="background-color: #f1f1f1; text-align: center; padding: 10px 0; border-radius: 0 0 8px 8px;">
+    <p style="font-size: 14px; color: #999;">© 2025 Deutsche Tutor Plattform. Alle Rechte vorbehalten.</p>
+  </div>
+</div>
       `,
     };
 

@@ -7,6 +7,7 @@ import {
   Query,
   Patch,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateCartDto } from './dtos/create-cart.dto';
 import { UpdateCartDto } from './dtos/update-cart.dto';
@@ -24,8 +25,12 @@ export class CartManagerController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
-  createCart(@Body() createCartDto: CreateCartDto) {
-    return this.cartManagerService.createCart(createCartDto);
+  async createCart(@Body() createCartDto: CreateCartDto) {
+    try {
+      return await this.cartManagerService.createCart(createCartDto);
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Failed to create cart.');
+    }
   }
 
   /**
@@ -56,7 +61,7 @@ export class CartManagerController {
    * @returns Updated cart
    */
   @UseGuards(JwtAuthGuard)
-  @Patch('ownerId')
+  @Patch()
   updateCart(
     @Query('ownerId') ownerId: string,
     @Body() updateCartDto: UpdateCartDto,

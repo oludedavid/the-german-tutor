@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cart, CartDocument } from './schemas/cart.schema';
@@ -18,6 +22,15 @@ export class CartManagerService {
    * @returns Created cart document
    */
   async createCart(createCartDto: CreateCartDto): Promise<Cart> {
+    const existingCart = await this.cartModel
+      .findOne({ owner: new Types.ObjectId(createCartDto.owner) })
+      .exec();
+
+    if (existingCart) {
+      throw new Error(
+        `A cart already exists for user with ID ${createCartDto.owner}`,
+      );
+    }
     const createdCart = new this.cartModel(createCartDto);
     return createdCart.save();
   }
@@ -34,25 +47,52 @@ export class CartManagerService {
       .exec();
   }
 
+  async getOrCreateCart(ownerId: string): Promise<Cart> {
+    let cart = await this.cartModel
+      .findOne({ owner: new Types.ObjectId(ownerId) })
+      .exec();
+
+    if (!cart) {
+      const newCart = new this.cartModel({
+        owner: new Types.ObjectId(ownerId),
+        courses: [],
+      });
+      cart = await newCart.save();
+    }
+
+    return cart;
+  }
+
   /**
    * Find a single cart by owner ID
    * @param ownerId - ID of the cart's owner
    * @returns The cart object
    */
-  async findCartByOwnerId(ownerId: string): Promise<Cart> {
-    const cart = await this.cartModel
-      .findOne({ owner: new Types.ObjectId(ownerId) })
-      .populate('owner')
-      .populate('courses.courseOfferedId')
-      .exec();
 
-    if (!cart) {
-      throw new NotFoundException(
-        `Cart for owner with ID ${ownerId} not found`,
+  async findCartByOwnerId(ownerId: string): Promise<Cart> {
+    try {
+      const query = Types.ObjectId.isValid(ownerId)
+        ? { owner: new Types.ObjectId(ownerId) } // If valid ObjectId, use it
+        : { owner: ownerId }; // Otherwise, treat it as a string
+
+      const cart = await this.cartModel
+        .findOne(query)
+        .populate('owner')
+        .populate('courses.courseOfferedId')
+        .exec();
+
+      if (!cart) {
+        throw new NotFoundException(
+          `Cart for owner with ID ${ownerId} not found`,
+        );
+      }
+
+      return cart;
+    } catch (error) {
+      throw new BadRequestException(
+        `Invalid ownerId or query failed: ${error.message}`,
       );
     }
-
-    return cart;
   }
 
   /**
